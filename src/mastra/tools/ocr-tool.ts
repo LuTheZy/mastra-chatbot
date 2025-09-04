@@ -47,7 +47,7 @@ export const ocrTool = createTool({
           }
           const arrayBuffer = await response.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
-          imageSource = buffer;
+          imageSource = buffer as any;
           console.log('✅ Image fetched successfully, size:', buffer.length, 'bytes');
         } catch (fetchError) {
           console.error('❌ Failed to fetch image:', fetchError);

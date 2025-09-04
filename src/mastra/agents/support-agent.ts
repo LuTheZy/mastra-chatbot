@@ -72,7 +72,7 @@ WHEN TO CREATE TICKET:
 
 Remember: Ask questions naturally - no tools needed for questions! Use OCR tool to extract text from images, then use textStructureTool to organize complex extracted text into logical JSON structures.`,
 
-  model: openai('gpt-4o-mini'),
+  model: openai('gpt-3.5-turbo'),
   tools: {
     createTicketTool,
     ocrTool,

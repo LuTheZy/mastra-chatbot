@@ -29,7 +29,7 @@ export const textStructureTool = createTool({
 
       // Use AI to intelligently structure the text
       const result = await generateText({
-        model: openai('gpt-4o'),
+        model: openai('gpt-3.5-turbo'),
         prompt: `
 You are an expert at analyzing and structuring text extracted from documents via OCR. 
 
