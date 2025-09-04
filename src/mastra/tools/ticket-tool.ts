@@ -11,7 +11,10 @@ export const createTicketTool = createTool({
     category: z.enum(['technical', 'billing', 'account', 'general']).describe('Category of the issue'),
     location: z.string().describe('Where the issue is happening'),
     impact: z.string().describe('How the issue is affecting the customer (business impact and urgency combined)'),
-    stepsTriedResult: z.string().describe('What steps have been tried to resolve the issue')
+    stepsTriedResult: z.string().describe('What steps have been tried to resolve the issue'),
+    visualEvidence: z.string().optional().describe('Text extracted from images and video frames processed in this session'),
+    audioContext: z.string().optional().describe('Transcribed speech and audio context from voice messages and videos'),
+    sessionContext: z.string().optional().describe('Comprehensive understanding built from all media inputs in this session')
   }),
   
   execute: async ({ context }) => {
@@ -28,6 +31,18 @@ export const createTicketTool = createTool({
       'low': 'low'
     };
     
+    // Determine evidence quality based on available media insights
+    const hasVisual = context.visualEvidence && context.visualEvidence.trim().length > 0;
+    const hasAudio = context.audioContext && context.audioContext.trim().length > 0;
+    const hasSession = context.sessionContext && context.sessionContext.trim().length > 0;
+    
+    let evidenceQuality = 'low';
+    if ((hasVisual && hasAudio) || hasSession) {
+      evidenceQuality = 'high';
+    } else if (hasVisual || hasAudio) {
+      evidenceQuality = 'medium';
+    }
+    
     // Create the ticket data structure
     const ticketData = {
       id: ticketId,
@@ -43,7 +58,16 @@ export const createTicketTool = createTool({
       createdAt: new Date().toISOString(),
       estimatedResolution: context.priority === 'critical' ? '2 hours' : 
                           context.priority === 'high' ? '8 hours' : 
-                          context.priority === 'medium' ? '24 hours' : '72 hours'
+                          context.priority === 'medium' ? '24 hours' : '72 hours',
+      // New media insights fields (optional)
+      ...(hasVisual || hasAudio || hasSession ? {
+        media_insights: {
+          ...(hasVisual && { visual_evidence: context.visualEvidence }),
+          ...(hasAudio && { audio_context: context.audioContext }),
+          ...(hasSession && { session_context: context.sessionContext })
+        },
+        evidence_quality: evidenceQuality
+      } : {})
     };
     
     console.log(`✅ TICKET CREATED: ${ticketId}`);

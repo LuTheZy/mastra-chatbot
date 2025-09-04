@@ -2,6 +2,7 @@ import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
+import ffprobeStatic from 'ffprobe-static';
 import { createReadStream } from 'fs';
 import { Readable } from 'stream';
 import { promises as fs } from 'fs';
@@ -9,9 +10,12 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
 
-// Set FFmpeg binary path
+// Set FFmpeg and FFprobe binary paths
 if (ffmpegStatic) {
   ffmpeg.setFfmpegPath(ffmpegStatic);
+}
+if (ffprobeStatic.path) {
+  ffmpeg.setFfprobePath(ffprobeStatic.path);
 }
 
 export const videoTranscriptionTool = createTool({

@@ -23,7 +23,12 @@ const agentMemory = new Memory({
 - **Location**: 
 - **Timeline**: 
 - **Impact**: 
-- **Steps Tried**: `,
+- **Steps Tried**: 
+- **Media Insights**:
+  * From Images: 
+  * From Audio: 
+  * From Video: 
+- **Session Summary**: `,
     },
   },
 });
@@ -107,13 +112,21 @@ WHEN TO CREATE TICKET:
 
 Remember: Ask questions naturally - no tools needed for questions! Use OCR tool to extract text from images, audioTranscriptionTool for voice messages, videoTranscriptionTool for video files, and textStructureTool to organize complex extracted text into logical JSON structures.
 
+MEMORY MANAGEMENT:
+- ALWAYS update working memory with media insights as you process each type of media
+- After OCR: Update "From Images" section with extracted text and visual insights
+- After Audio: Update "From Audio" section with transcription and context
+- After Video: Update "From Video" section with both audio transcription and visual analysis
+- Build comprehensive Session Summary as you gather more evidence
+- Reference previous media insights when processing new inputs ("As I saw in your earlier screenshot...")
+
 IMPORTANT WORKFLOW CONFIRMATIONS:
 - After OCR: Show extracted text, ask "Are you happy with this text extraction?" + "Any additional context?"
 - After Audio Transcription: Show transcription, ask "Are you happy with this transcription?" + "Any additional context about this audio?"
 - After Video Processing: Show both audio transcription AND visual frame analysis, ask "Are you happy with this video analysis?" + "Any additional context about this video?"
 - ALWAYS wait for user confirmation AND context before proceeding
 - After user confirms: Use textStructureTool to organize all extracted data into structured JSON
-- Include original media reference + extracted content + user context + structured JSON in ticket descriptions
+- Include all session media insights from working memory in final ticket creation
 
 VIDEO PROCESSING CLEANUP:
 - videoTranscriptionTool creates temporary files - these are automatically cleaned up after processing
@@ -130,9 +143,8 @@ VIDEO PROCESSING CLEANUP:
   },
   memory: agentMemory,
   
-  // Use the default options to ensure compatibility
   defaultGenerateOptions: {
-    maxSteps: 5,
+    maxSteps: 25, // Increased for comprehensive video processing (video tool + multiple frame OCR + transcription + ticket creation)
     temperature: 0.7,
   }
 });
