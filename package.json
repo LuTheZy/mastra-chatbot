@@ -30,6 +30,7 @@
     "@mastra/core": "^0.15.2",
     "@mastra/libsql": "^0.13.7",
     "@mastra/memory": "^0.14.2",
+    "@mastra/voice-openai": "^0.11.3",
     "tesseract.js": "^6.0.1",
     "zod": "^3.25.76"
   }
