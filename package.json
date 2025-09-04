@@ -1,0 +1,36 @@
+{
+  "name": "mastra-chatbot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "mastra dev",
+    "dev:clean": "npm run clean && mastra dev",
+    "start": "mastra start",
+    "build": "mastra build && tsc",
+    "generate": "mastra generate",
+    "migrate": "mastra migrate",
+    "clean": "rimraf .mastra dist node_modules/.cache",
+    "clean:force": "powershell \"Get-Process | Where-Object {$_.ProcessName -eq 'node'} | Stop-Process -Force; Remove-Item '.mastra' -Recurse -Force -ErrorAction SilentlyContinue\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "mastra": "^0.11.2",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^2.0.23",
+    "@mastra/core": "^0.15.2",
+    "@mastra/libsql": "^0.13.7",
+    "@mastra/memory": "^0.14.2",
+    "tesseract.js": "^6.0.1",
+    "zod": "^3.25.76"
+  }
+}
