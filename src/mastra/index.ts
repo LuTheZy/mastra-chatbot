@@ -1,11 +1,20 @@
 import { Mastra } from '@mastra/core';
 import { registerApiRoute } from '@mastra/core/server';
+import { LibSQLStore } from '@mastra/libsql';
+import { PinoLogger } from '@mastra/loggers';
 import { supportAgent } from './agents/support-agent';
 import { buildCanonicalEnvelope } from './utils/buildCanonicalEnvelope';
 import { SCHEMA_VERSION, AGENT_VERSION } from './constants/version';
 
 export const mastra = new Mastra({
   agents: { supportAgent },
+  storage: new LibSQLStore({
+    url: ':memory:',
+  }),
+  logger: new PinoLogger({
+    name: 'mastra-chatbot',
+    level: 'info',
+  }),
   telemetry: {
     serviceName: "mastra-chatbot",
     enabled: true,
@@ -13,7 +22,7 @@ export const mastra = new Mastra({
       type: "always_on",
     },
     export: {
-      type: "console", // Change to "otlp" if you want to export to external service
+      type: "console",
     },
   },
   server: {
