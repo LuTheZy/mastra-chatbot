@@ -1,7 +1,8 @@
 import { Agent } from '@mastra/core';
 import { Memory } from '@mastra/memory';
 import { LibSQLStore } from '@mastra/libsql';
-import { openai } from '@ai-sdk/openai';
+// Model comes from provider abstraction so we can later swap LiteLLM routing
+import { modelProvider } from '../model/modelProvider';
 import { createTicketTool } from '../tools/ticket-tool';
 import { ocrTool } from '../tools/ocr-tool';
 import { textStructureTool } from '../tools/text-structure-tool';
@@ -133,7 +134,7 @@ VIDEO PROCESSING CLEANUP:
 - Process video frames through ocrTool to extract visual text from key moments
 - Combine audio + visual + user context for comprehensive video understanding`,
 
-  model: openai('gpt-3.5-turbo'),
+  model: modelProvider.getModel(process.env.MODEL_ID || 'gpt-3.5-turbo'),
   tools: {
     createTicketTool,
     ocrTool,
@@ -144,7 +145,7 @@ VIDEO PROCESSING CLEANUP:
   memory: agentMemory,
   
   defaultGenerateOptions: {
-    maxSteps: 25, // Increased for comprehensive video processing (video tool + multiple frame OCR + transcription + ticket creation)
-    temperature: 0.7,
+    maxSteps: 100,
+    temperature: modelProvider.getDefaultTemperature(),
   }
 });

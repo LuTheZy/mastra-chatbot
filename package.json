@@ -10,7 +10,8 @@
     "generate": "mastra generate",
     "migrate": "mastra migrate",
     "clean": "rimraf .mastra dist node_modules/.cache",
-    "clean:force": "powershell \"Get-Process | Where-Object {$_.ProcessName -eq 'node'} | Stop-Process -Force; Remove-Item '.mastra' -Recurse -Force -ErrorAction SilentlyContinue\"",
+    "cleanup-mastra": "powershell -ExecutionPolicy Bypass -File ./scripts/cleanup-mastra.ps1",
+    "dev:safe": "npm run cleanup-mastra && npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "typecheck": "tsc --noEmit"
   },
