@@ -134,7 +134,7 @@ VIDEO PROCESSING CLEANUP:
 - Process video frames through ocrTool to extract visual text from key moments
 - Combine audio + visual + user context for comprehensive video understanding`,
 
-  model: modelProvider.getModel(process.env.MODEL_ID || 'gpt-3.5-turbo'),
+  model: modelProvider.getModel(process.env.MODEL_ID || 'gpt-4o-mini'),
   tools: {
     createTicketTool,
     ocrTool,

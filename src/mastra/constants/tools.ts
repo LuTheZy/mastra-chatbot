@@ -2,6 +2,7 @@ export const TOOL_IDS = {
   EXTRACT_ISSUE: 'extractIssue',
   ANALYZE_TICKET: 'analyzeTicket',
   REQUEST_CLARIFICATION: 'requestClarification',
+  CREATE_TICKET: 'createTicket',
   TRIGGER_WORKFLOW: 'triggerWorkflow'
 } as const;
 

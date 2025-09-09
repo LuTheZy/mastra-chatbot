@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mastra Agent Test Console</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #0e051b;
+            --bg-secondary: #160f22;
+            --bg-tertiary: #1f1831;
+            --bg-card: #2a2240;
+            --accent: #a871ff;
+            --accent-hover: #9861e8;
+            --accent-glow: rgba(168, 113, 255, 0.3);
+            --accent-pink: #ff0078;
+            --accent-green: #00e699;
+            --text-primary: #f3ecfe;
+            --text-secondary: #d4c4f0;
+            --text-muted: #9c87b8;
+            --border: rgba(82, 64, 112, 0.4);
+            --border-glow: rgba(168, 113, 255, 0.2);
+            --success: #00e699;
+            --error: #ff0078;
+            --warning: #ffaa00;
+            --shadow: 0 8px 32px rgba(14, 5, 27, 0.5);
+            --shadow-lg: 0 20px 60px rgba(14, 5, 27, 0.6);
+            --shadow-glow: 0 0 30px rgba(168, 113, 255, 0.15);
+            --gradient-primary: linear-gradient(135deg, #a871ff 0%, #ff0078 100%);
+            --gradient-secondary: linear-gradient(135deg, #160f22 0%, #1f1831 100%);
+            --gradient-card: linear-gradient(145deg, rgba(42, 34, 64, 0.6) 0%, rgba(31, 24, 49, 0.8) 100%);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(ellipse at top, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(168, 113, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 0, 120, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0, 230, 153, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            padding: 2rem 2rem 1.5rem 2rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, var(--accent-glow) 50%, transparent 100%);
+            opacity: 0.1;
+            animation: shimmer 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.25rem;
+            position: relative;
+            text-shadow: 0 0 20px var(--accent-glow);
+            animation: glow-pulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+        
+        @keyframes glow-pulse {
+            0% { filter: drop-shadow(0 0 5px var(--accent-glow)); }
+            100% { filter: drop-shadow(0 0 20px var(--accent-glow)); }
+        }
+        
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem 2rem 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            min-height: calc(100vh - 160px);
+        }
+        
+        .panel {
+            background: var(--gradient-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--gradient-primary);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .panel:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-lg), 0 0 40px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+        
+        .panel-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+        
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .panel-content {
+            padding: 1.25rem 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        input, textarea {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow), 0 0 20px var(--accent-glow);
+            background: var(--bg-tertiary);
+            transform: translateY(-1px);
+        }
+        
+        input:hover, textarea:hover {
+            border-color: var(--border-glow);
+            background: var(--bg-tertiary);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            line-height: 1.5;
+        }
+        
+        .btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+            pointer-events: none;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px var(--accent-glow);
+            filter: brightness(1.1);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .responses-container {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .responses {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            max-height: calc(100vh - 400px);
+        }
+        
+        .responses::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .responses::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-radius: 4px;
+        }
+        
+        .responses::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        
+        .responses::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+        
+        .response-item {
+            background: var(--gradient-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+        
+        .response-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .response-item:hover {
+            border-color: var(--accent);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+        
+        .response-item:hover::before {
+            opacity: 0.8;
+        }
+        
+        .response-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            background: var(--bg-tertiary);
+        }
+        
+        .response-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-success {
+            background: rgba(0, 230, 153, 0.15);
+            color: var(--success);
+            border: 1px solid var(--success);
+            box-shadow: 0 0 10px rgba(0, 230, 153, 0.2);
+            animation: pulse-success 2s ease-in-out infinite;
+        }
+        
+        .status-error {
+            background: rgba(255, 0, 120, 0.15);
+            color: var(--error);
+            border: 1px solid var(--error);
+            box-shadow: 0 0 10px rgba(255, 0, 120, 0.2);
+            animation: pulse-error 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-success {
+            0%, 100% { box-shadow: 0 0 5px rgba(0, 230, 153, 0.2); }
+            50% { box-shadow: 0 0 15px rgba(0, 230, 153, 0.4); }
+        }
+        
+        @keyframes pulse-error {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 0, 120, 0.2); }
+            50% { box-shadow: 0 0 15px rgba(255, 0, 120, 0.4); }
+        }
+        
+        .timestamp {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-family: monospace;
+        }
+        
+        .response-body {
+            padding: 1rem;
+        }
+        
+        .response-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .response-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .json-viewer {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+        
+        .json-viewer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.3;
+        }
+        
+        .clear-btn {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            margin-left: auto;
+        }
+        
+        .clear-btn:hover {
+            background: var(--error);
+            border-color: var(--error);
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 3rem 1rem;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                min-height: auto;
+                gap: 1rem;
+                padding: 0 1rem 2rem 1rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                padding: 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .responses {
+                max-height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-robot"></i> Mastra Agent Test Console</h1>
+        <p>Professional testing interface for your Mastra support agent integration</p>
+    </div>
+    
+    <div class="container">
+        <!-- Input Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-paper-plane"></i>
+                    Test Configuration
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="form-group">
+                    <label>API Endpoint</label>
+                    <input type="text" id="apiUrl" value="http://localhost:4111/process" placeholder="http://localhost:4111/process">
+                </div>
+                
+                <div class="form-group">
+                    <label>Support Message</label>
+                    <textarea id="message" placeholder="Describe your support issue here...">Hi, I'm having issues with my login system. It started yesterday and users can't authenticate. We tried restarting the server but it's still broken.</textarea>
+                </div>
+                
+                <button class="btn" onclick="testProcess()" id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                    Send Request
+                </button>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Run ID</label>
+                        <input type="text" id="runId" placeholder="Optional run identifier">
+                    </div>
+                    <div class="form-group">
+                        <label>Temperature</label>
+                        <input type="number" id="temperature" value="0.3" step="0.1" min="0" max="1" placeholder="0.0 - 1.0">
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 1rem;">
+                    <div style="display: flex; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
+                        <span id="healthStatus">⚡ Checking health...</span>
+                        <span id="requestCount">📊 0 requests sent</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Response Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-history"></i>
+                    Response History
+                </div>
+                <button class="btn clear-btn" onclick="clearHistory()" id="clearBtn">
+                    <i class="fas fa-trash"></i>
+                    Clear All
+                </button>
+            </div>
+            <div class="panel-content">
+                <div class="responses-container">
+                    <div class="responses" id="responses">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No responses yet. Send a request to see results here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let requestCount = 0;
+        let responseHistory = [];
+        
+        async function testProcess() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const message = document.getElementById('message').value;
+            const runId = document.getElementById('runId').value;
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const sendBtn = document.getElementById('sendBtn');
+            
+            if (!message.trim()) {
+                showNotification('Please enter a message', 'error');
+                return;
+            }
+            
+            // Disable button and show loading
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            
+            const startTime = Date.now();
+            const timestamp = new Date().toLocaleTimeString();
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message.trim(),
+                        runId: runId.trim() || undefined,
+                        temperature: temperature
+                    })
+                });
+                
+                const data = await response.json();
+                const duration = Date.now() - startTime;
+                
+                // Add to history
+                requestCount++;
+                const historyItem = {
+                    id: requestCount,
+                    timestamp,
+                    duration,
+                    message: message.trim(),
+                    runId: runId.trim() || null,
+                    temperature,
+                    success: response.ok,
+                    status: response.status,
+                    data: data
+                };
+                
+                responseHistory.unshift(historyItem);
+                updateResponseHistory();
+                updateRequestCounter();
+                
+                if (response.ok) {
+                    showNotification('Request successful!', 'success');
+                    // Clear message for next test
+                    document.getElementById('message').value = '';
+                    // Generate new run ID
+                    document.getElementById('runId').value = `test-${Date.now()}`;
+                } else {
+                    showNotification(`Request failed (${response.status})`, 'error');
+                }
+                
+            } catch (error) {
+                const duration = Date.now() - startTime;
+                
+                // Add error to history
+                requestCount++;
+                const historyItem = {
+                    id: requestCount,
+                    timestamp,
+                    duration,
+                    message: message.trim(),
+                    runId: runId.trim() || null,
+                    temperature,
+                    success: false,
+                    error: error.message,
+                    data: null
+                };
+                
+                responseHistory.unshift(historyItem);
+                updateResponseHistory();
+                updateRequestCounter();
+                
+                showNotification(`Network error: ${error.message}`, 'error');
+            } finally {
+                // Re-enable button
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Request';
+            }
+        }
+        
+        function updateResponseHistory() {
+            const responsesContainer = document.getElementById('responses');
+            
+            if (responseHistory.length === 0) {
+                responsesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No responses yet. Send a request to see results here.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            responsesContainer.innerHTML = responseHistory.map(item => `
+                <div class="response-item">
+                    <div class="response-header">
+                        <div class="response-meta">
+                            <span class="status-badge ${item.success ? 'status-success' : 'status-error'}">
+                                ${item.success ? 'SUCCESS' : 'ERROR'}
+                            </span>
+                            <span class="timestamp">${item.timestamp} (${item.duration}ms)</span>
+                            ${item.runId ? `<span style="font-family: monospace; font-size: 0.8rem; color: var(--text-muted);">${item.runId}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="response-body">
+                        <div class="response-section">
+                            <div class="section-title">Request</div>
+                            <div class="json-viewer">${JSON.stringify({
+                                message: item.message,
+                                runId: item.runId,
+                                temperature: item.temperature
+                            }, null, 2)}</div>
+                        </div>
+                        
+                        ${item.success ? `
+                            <div class="response-section">
+                                <div class="section-title">Canonical Response</div>
+                                <div class="json-viewer">${JSON.stringify(item.data.canonical, null, 2)}</div>
+                            </div>
+                            
+                            <div class="response-section">
+                                <div class="section-title">Raw Agent Output</div>
+                                <div class="json-viewer">${JSON.stringify(item.data.raw, null, 2)}</div>
+                            </div>
+                        ` : `
+                            <div class="response-section">
+                                <div class="section-title">Error Details</div>
+                                <div class="json-viewer">${item.error || JSON.stringify(item.data, null, 2)}</div>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function clearHistory() {
+            responseHistory = [];
+            requestCount = 0;
+            updateResponseHistory();
+            updateRequestCounter();
+            showNotification('History cleared', 'success');
+        }
+        
+        function updateRequestCounter() {
+            document.getElementById('requestCount').textContent = `📊 ${requestCount} requests sent`;
+        }
+        
+        function showNotification(message, type) {
+            // Simple notification - could be enhanced with toast library
+            console.log(`${type.toUpperCase()}: ${message}`);
+        }
+        
+        // Test health endpoint on load
+        async function testHealth() {
+            const healthStatus = document.getElementById('healthStatus');
+            try {
+                const response = await fetch('http://localhost:4111/health');
+                const data = await response.json();
+                healthStatus.innerHTML = '✅ Agent healthy';
+                healthStatus.style.color = 'var(--success)';
+                console.log('Health check:', data);
+            } catch (error) {
+                healthStatus.innerHTML = '❌ Agent offline';
+                healthStatus.style.color = 'var(--error)';
+                console.log('Health check failed:', error.message);
+            }
+        }
+        
+        // Initialize
+        testHealth();
+        
+        // Auto-generate initial run ID
+        document.getElementById('runId').value = `test-${Date.now()}`;
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + Enter to send (original)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                testProcess();
+            }
+            
+            // Enter key to send (when focused on textarea or other form elements)
+            if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                // Only trigger if focused on form elements (not when typing in textarea on new line)
+                const activeElement = document.activeElement;
+                const isTextarea = activeElement && activeElement.tagName === 'TEXTAREA';
+                const isInput = activeElement && activeElement.tagName === 'INPUT';
+                
+                // For textarea, only send on Enter if it's empty or at the end with short content
+                if (isTextarea) {
+                    const textarea = activeElement;
+                    const cursorPos = textarea.selectionStart;
+                    const textLength = textarea.value.length;
+                    const isAtEnd = cursorPos === textLength;
+                    const isShortText = textLength < 100; // Allow Enter to send for short messages
+                    
+                    if (isAtEnd && isShortText && textarea.value.trim()) {
+                        e.preventDefault();
+                        testProcess();
+                    }
+                }
+                
+                // For input fields, always send on Enter
+                if (isInput) {
+                    e.preventDefault();
+                    testProcess();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -25,8 +25,10 @@ export function buildCanonicalEnvelope(
   const extractTool = findTool(TOOL_IDS.EXTRACT_ISSUE);
   const analyzeTool = findTool(TOOL_IDS.ANALYZE_TICKET);
   const clarifyTool = findTool(TOOL_IDS.REQUEST_CLARIFICATION);
+  const createTicketTool = findTool(TOOL_IDS.CREATE_TICKET);
 
-  const ticket = extractTool?.result?.ticket
+  const ticket = createTicketTool?.result?.ticketData
+    || extractTool?.result?.ticket
     || agentOrWorkflowResponse.ticketData
     || agentOrWorkflowResponse.result?.ticketData
     || undefined;
@@ -39,6 +41,7 @@ export function buildCanonicalEnvelope(
 
   let phase: CanonicalEnvelope['state']['phase'] = 'generic';
   if (needsClar) phase = 'clarification';
+  else if (createTicketTool && ticket) phase = 'finalTicket'; // Ticket was actually created
   else if (ticket && agentOrWorkflowResponse.conversationState?.conversationComplete) phase = 'finalTicket';
   else if (ticket) phase = 'ticketDraft';
   else if (analysis && !ticket) phase = 'analysisOnly';
@@ -96,7 +99,7 @@ export function buildCanonicalEnvelope(
       suggestedNext
     },
     sourceRefs: {
-      ticketToolCallId: extractTool?.toolCallId || null,
+      ticketToolCallId: createTicketTool?.toolCallId || extractTool?.toolCallId || null,
       analysisToolCallId: analyzeTool?.toolCallId || null,
       clarificationToolCallId: clarifyTool?.toolCallId || null,
       compiledFromWorkflow: Boolean(opts.compiledFromWorkflow)
