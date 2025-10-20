@@ -12,6 +12,13 @@
     "clean": "rimraf .mastra dist node_modules/.cache",
     "cleanup-mastra": "powershell -ExecutionPolicy Bypass -File ./scripts/cleanup-mastra.ps1",
     "dev:safe": "npm run cleanup-mastra && npm run dev",
+    "telegram:dev": "tsx src/telegram/server.ts",
+    "telegram:build": "tsc && node dist/telegram/server.js",
+    "ngrok:start": "node scripts/start-ngrok.js",
+    "ngrok:setup": "node scripts/setup-webhook.js",
+    "ngrok:delete": "node scripts/setup-webhook.js --delete",
+    "telegram:full": "node scripts/start-full-stack.js",
+    "telegram:quick": "npm run ngrok:start && timeout /t 5 && npm run ngrok:setup && npm run telegram:dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "typecheck": "tsc --noEmit"
   },
